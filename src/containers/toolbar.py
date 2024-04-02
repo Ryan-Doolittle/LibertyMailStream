@@ -59,12 +59,10 @@ class Toolbar(QToolBar):
         self.bgColorPickerButton.setFixedSize(24, 24)
         self.bgColorPickerButton.clicked.connect(self.setTextBackgroundColor)
 
-        # Wrap the tool button in a QWidgetAction to add it to the toolbar
         colorPickerAction = QWidgetAction(self)
         colorPickerAction.setDefaultWidget(self.colorPickerButton)
         self.addAction(colorPickerAction)
 
-        # Wrap the tool button in a QWidgetAction to add it to the toolbar
         backgroundColorPickerAction = QWidgetAction(self)
         backgroundColorPickerAction.setDefaultWidget(self.bgColorPickerButton)
         self.addAction(backgroundColorPickerAction)
