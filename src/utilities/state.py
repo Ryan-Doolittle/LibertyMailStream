@@ -1,10 +1,12 @@
 import datetime
 import json
+
+from ..utilities.resource_path import resource_path
 from ..utilities.config import config
 
 
 
-path = "state.json"
+path = resource_path('settings/state.json')
 
 
 

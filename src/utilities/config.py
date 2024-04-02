@@ -6,7 +6,7 @@ from .resource_path import resource_path
 class Config:
     def __init__(self) -> None:
         self.config = configparser.ConfigParser()
-        self.config.read('config.cfg')
+        self.config.read(resource_path('settings/config.cfg'))
 
     def get(self, section, option):
         return self.config.get(section, option)
