@@ -6,10 +6,6 @@ from ..utilities.config import config
 
 
 
-path = resource_path('settings/state.json')
-
-
-
 class StateManager:
     def __init__(self) -> None:
         self.state:dict = self.get_state_from_file()
@@ -20,7 +16,7 @@ class StateManager:
 
     def get_state_from_file(self) -> dict:
         try:
-            with open(path, "r") as f:
+            with open(resource_path('settings/state.json'), "r") as f:
                 loaded_state = json.load(f)
                 # Convert the date string back to a datetime object
                 loaded_state["todays_date"] = datetime.datetime.strptime(loaded_state["todays_date"], "%Y-%m-%d %H:%M:%S.%f")

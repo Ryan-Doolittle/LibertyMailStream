@@ -90,7 +90,6 @@ class ControlPanel(QToolBar):
         #     self.recipientsTable.setItem(row_pos, 0, QTableWidgetItem(row['Status']))
         #     self.recipientsTable.setItem(row_pos, 1, QTableWidgetItem(row['Email Address']))
         
-   
 
     def startSendingEmails(self):
         if not self.parent_frame.gmail_service:

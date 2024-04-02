@@ -15,7 +15,7 @@ def clean_email_list(input_file_path, output_file_path):
     with open(input_file_path, mode='r', encoding='utf-8') as infile:
         reader = csv.reader(infile)
         for row in reader:
-            if len(row) == 0:  # Skip empty rows
+            if len(row) == 0:
                 continue
             email = row[0].strip()
             if is_valid_email(email):
@@ -23,5 +23,5 @@ def clean_email_list(input_file_path, output_file_path):
 
     with open(output_file_path, mode='w', encoding='utf-8', newline='') as outfile:
         writer = csv.writer(outfile)
-        for email in sorted(unique_emails):  # Sorting for convenience
+        for email in sorted(unique_emails):
             writer.writerow([email])

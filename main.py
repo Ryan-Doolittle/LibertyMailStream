@@ -12,7 +12,6 @@ from src.utilities.oauth import GmailService
 
 
 
-
 if __name__ == "__main__":
     if config.get("FOLDERS","templates_folder") not in os.listdir("."):
         os.mkdir(config.get("FOLDERS","templates_folder"))

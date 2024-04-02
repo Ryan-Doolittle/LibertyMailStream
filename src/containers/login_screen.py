@@ -8,6 +8,8 @@ from ..utilities.config import config
 
 from ..utilities.oauth import GmailService
 
+
+
 class EmailerLoginDialog(QDialog):
     def __init__(self, oauth2_handler) -> None:
         super().__init__()
@@ -15,6 +17,7 @@ class EmailerLoginDialog(QDialog):
         self.oauth2_handler:GmailService = oauth2_handler
         
         self.initUI()
+
 
     def initUI(self) -> None:
         self.setWindowTitle("LMS")
@@ -33,6 +36,7 @@ class EmailerLoginDialog(QDialog):
         layout.addWidget(login_button)
 
         self.setLayout(layout)
+
 
     def initiate_oauth2_flow(self):
         client_id = config.get("TEMP_SECRET_STORAGE", "google_client_id")

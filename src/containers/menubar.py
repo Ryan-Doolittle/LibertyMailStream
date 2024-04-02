@@ -7,6 +7,8 @@ import json
 from ..utilities.config import config
 
 
+
+
 class Menubar:
     def __init__(self, parent, editor):
         self.parent = parent

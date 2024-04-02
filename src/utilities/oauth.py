@@ -12,6 +12,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from email.mime.text import MIMEText
 
+
+
+
 class GmailService:
     SCOPES = ['https://www.googleapis.com/auth/gmail.send']
     REDIRECT_URI = 'http://localhost:8080/'
@@ -21,6 +24,7 @@ class GmailService:
         self.service = None
         self.auth_code = None
         self.auth_code_event = Event()
+
 
     def authenticate(self, client_id, client_secret):
         flow = InstalledAppFlow.from_client_config(
@@ -37,6 +41,7 @@ class GmailService:
         
         auth_url, _ = flow.authorization_url(prompt='consent')
         webbrowser.open_new(auth_url)
+
 
         def AuthHandlerFactory(service):
             """
@@ -71,10 +76,12 @@ class GmailService:
 
         return self.credentials is not None
 
+
     def build_service(self):
         if not self.credentials:
             raise Exception("No credentials available. Please authenticate first.")
         self.service = build('gmail', 'v1', credentials=self.credentials)
+
 
     def send_email(self, to, subject, plain_text, html):
         if not self.service:

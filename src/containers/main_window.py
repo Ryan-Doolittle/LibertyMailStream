@@ -32,6 +32,7 @@ class LibertyMailstream(QMainWindow):
         self.setWindowSize()
         self.init_main_window()
         
+
     def init_main_window(self):
         stylesheet = qdarktheme.load_stylesheet(theme=config.get("PREFERENCES", "Theme"))
         QApplication.instance().setStyleSheet(stylesheet)
@@ -69,15 +70,18 @@ class LibertyMailstream(QMainWindow):
         self.toolbar.setVisible(config.get_bool("PREFERENCES", "toolbar_toggle"))
         self.control_panel.setVisible(config.get_bool("PREFERENCES", "control_panel_toggle"))
 
+
     def resizeEvent(self, event):
         newSize = event.size()
         config.set_window_size(newSize.width(), newSize.height())
         super().resizeEvent(event)
 
+
     def setWindowSize(self):
         width = config.get("PREFERENCES", "window_width")
         height = config.get("PREFERENCES", "window_height")
         self.resize(int(width), int(height))
+
 
     def on_topLevelChanged(self, floating):
         toolbar = self.sender()

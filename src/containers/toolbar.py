@@ -15,7 +15,6 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QTextListFormat
 from PyQt5.QtGui import QTextCursor
 
-
 from ..utilities.resource_path import resource_path
 
 
