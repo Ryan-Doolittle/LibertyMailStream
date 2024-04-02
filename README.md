@@ -25,7 +25,10 @@ For simplicity and to focus on early development, LMS will remain limited to sup
 - Recipients Listing (managed locally outside of the application.)
 - Email Control panel for starting the mass emailing process.
 
-## Setting Up Client ID and Secret for LMS
+## Binary version available
+https://github.com/Ryan-Doolittle/LibertyMailStream/releases
+
+## Setting Up Client ID and Secret for non-compiled application
 
 To set up the LMS application, you need to create a client ID and secret through the Google Cloud Platform. Here’s how you can do it:
 
