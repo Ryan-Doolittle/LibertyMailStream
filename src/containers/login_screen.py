@@ -40,11 +40,8 @@ class EmailerLoginDialog(QDialog):
         success = self.oauth2_handler.authenticate(
             client_id,
             config.get("TEMP_SECRET_STORAGE", "google_client_secret")
-        )  # Assuming this method initiates the flow and returns success status and email if successful
-        
+        )
         if success:
-            self.accept()  # Close the dialog and return success
+            self.accept()
         else:
             QMessageBox.critical(self, "Login Failed", "OAuth2 Authentication failed. Please try again.")
-
-# Example usage of EmailerLoginDialog would require passing an OAuth2 handler when instantiating

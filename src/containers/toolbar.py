@@ -38,7 +38,7 @@ class Toolbar(QToolBar):
         self.fontSizeBox = QSpinBox(self)
         self.fontSizeBox.setMinimum(1)
         self.fontSizeBox.setMaximum(100)
-        self.fontSizeBox.setValue(12)  # Default value
+        self.fontSizeBox.setValue(12)
         self.fontSizeBox.valueChanged.connect(lambda: self.setFontSize(self.fontSizeBox.value()))
 
         # Adding Widgets to Toolbar
@@ -48,15 +48,15 @@ class Toolbar(QToolBar):
         # Create a color picker tool button
         self.colorPickerButton = QToolButton(self)
         self.colorPickerButton.setAutoFillBackground(True)
-        self.updateButtonColor(self.editor.textColor())  # Initialize with the current text color
-        self.colorPickerButton.setFixedSize(24, 24)  # Makes the button square
+        self.updateButtonColor(self.editor.textColor())
+        self.colorPickerButton.setFixedSize(24, 24)
         self.colorPickerButton.clicked.connect(self.setTextColor)
 
         # Background Color Picker Button
         self.bgColorPickerButton = QToolButton(self)
         self.bgColorPickerButton.setAutoFillBackground(True)
-        self.updateButtonColor(self.editor.textBackgroundColor())  # Initialize with the current text background color
-        self.bgColorPickerButton.setFixedSize(24, 24)  # Makes the button square
+        self.updateButtonColor(self.editor.textBackgroundColor())
+        self.bgColorPickerButton.setFixedSize(24, 24)
         self.bgColorPickerButton.clicked.connect(self.setTextBackgroundColor)
 
         # Wrap the tool button in a QWidgetAction to add it to the toolbar
@@ -71,9 +71,9 @@ class Toolbar(QToolBar):
 
         # Heading Styles Actions
         self.addSeparator()
-        self.addHeadingAction("H1", 24)  # Assuming 24pt for H1
-        self.addHeadingAction("H2", 18)  # Assuming 18pt for H2
-        self.addHeadingAction("H3", 14)  # Assuming 14pt for H3
+        self.addHeadingAction("H1", 24)
+        self.addHeadingAction("H2", 18)
+        self.addHeadingAction("H3", 14)
 
         # Text Style Actions
         self.addSeparator()
@@ -133,7 +133,6 @@ class Toolbar(QToolBar):
         color = QColorDialog.getColor()
         if color.isValid():
             self.editor.setTextBackgroundColor(color)
-            # Optionally, update the button's background color to reflect the chosen color
             self.bgColorPickerButton.setStyleSheet(f"background-color: {color.name()};")
 
 
@@ -145,7 +144,6 @@ class Toolbar(QToolBar):
 
 
     def updateButtonColor(self, color):
-        # Update the button's background color to reflect the chosen color
         self.colorPickerButton.setStyleSheet(f"background-color: {color.name()}; border: none;")
 
 
@@ -196,17 +194,13 @@ class Toolbar(QToolBar):
         currentFormat = cursor.charFormat()
         currentFont = currentFormat.font()
 
-        # Decide whether to apply heading style or revert to normal based on current formatting
         if currentFont.pointSize() == size and currentFont.weight() == weight:
-            # Revert to normal text: Set font size to default (e.g., 12pt) and weight to normal
-            currentFont.setPointSize(12)  # Assuming 12 is the default size for normal text
+            currentFont.setPointSize(12)
             currentFont.setWeight(QFont.Normal)
         else:
-            # Apply the heading style
             currentFont.setPointSize(size)
             currentFont.setWeight(weight)
 
-        # Apply the changes
         currentFormat.setFont(currentFont)
         cursor.mergeCharFormat(currentFormat)
         self.editor.mergeCurrentCharFormat(currentFormat)

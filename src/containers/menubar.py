@@ -103,7 +103,6 @@ class Menubar:
 
 
     def newDocument(self):
-        # Logic for creating a new document
         self.parent.editor.clear()
         self.document_name = "Untitled"
         self.update_title()

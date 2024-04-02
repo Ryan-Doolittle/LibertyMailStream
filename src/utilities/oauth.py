@@ -20,7 +20,7 @@ class GmailService:
         self.credentials = None
         self.service = None
         self.auth_code = None
-        self.auth_code_event = Event()  # Initialize the event here.
+        self.auth_code_event = Event()
 
     def authenticate(self, client_id, client_secret):
         flow = InstalledAppFlow.from_client_config(
@@ -54,7 +54,7 @@ class GmailService:
                         self.end_headers()
                         self.wfile.write(b'Authentication successful. You may close this window.')
                     else:
-                        self.send_error(401)  # Send an error response.
+                        self.send_error(401)
             return CustomAuthHandler
         
         httpd = HTTPServer(('', 8080), AuthHandlerFactory(self))
