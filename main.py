@@ -23,9 +23,9 @@ if __name__ == "__main__":
     qdarktheme.enable_hi_dpi()
     app = QApplication(sys.argv)
     gmail_service = GmailService()
-    login_dialog = EmailerLoginDialog(gmail_service)
-    if login_dialog.exec_() == QDialog.Accepted:
-        gmail_service.build_service()
-        window = LibertyMailstream(gmail_service)
-        window.show()
-        sys.exit(app.exec_())
+    # login_dialog = EmailerLoginDialog(gmail_service)
+    # if login_dialog.exec_() == QDialog.Accepted:
+    #     gmail_service.build_service()
+    window = LibertyMailstream(gmail_service)
+    window.show()
+    sys.exit(app.exec_())

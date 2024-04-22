@@ -7,16 +7,17 @@ from ..utilities.config import config
 
 
 class StateManager:
+    path = 'settings/state.json'
     def __init__(self) -> None:
         self.state:dict = self.get_state_from_file()
-        self.max_email_count = config.get("DEFAULT", "daily_email_limit")
+        self.max_email_count = config.get("PREFERENCES", "daily_email_limit")
         
         self.check_and_reset_if_new_day()
 
 
     def get_state_from_file(self) -> dict:
         try:
-            with open(resource_path('settings/state.json'), "r") as f:
+            with open(resource_path(StateManager.path), "r") as f:
                 loaded_state = json.load(f)
                 # Convert the date string back to a datetime object
                 loaded_state["todays_date"] = datetime.datetime.strptime(loaded_state["todays_date"], "%Y-%m-%d %H:%M:%S.%f")
@@ -31,7 +32,7 @@ class StateManager:
         # Ensure todays_date is converted to a string before saving
         temp_state = self.state.copy()
         temp_state["todays_date"] = temp_state["todays_date"].strftime("%Y-%m-%d %H:%M:%S.%f")
-        with open(path, "w") as f:
+        with open(resource_path(StateManager.path), "w") as f:
             json.dump(temp_state, f, indent=4)
 
 

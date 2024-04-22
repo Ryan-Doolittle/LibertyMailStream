@@ -51,16 +51,16 @@ class ControlPanel(QToolBar):
         self.buttonBarLayout.addWidget(self.removeButton)
         self.buttonBarLayout.addWidget(self.refreshButton)
         
-        # self.recipientsTable = QTableWidget()
-        # self.recipientsTable.setColumnCount(2)
-        # self.recipientsTable.setHorizontalHeaderLabels(['Status', 'Email Address'])
-        # self.recipientsTable.verticalHeader().setVisible(False)
-        # self.recipientsTable.setShowGrid(True)
-        # self.recipientsTable.setColumnWidth(0, 55)
-        # self.recipientsTable.horizontalHeader().setStretchLastSection(True)
+        self.recipientsTable = QTableWidget()
+        self.recipientsTable.setColumnCount(2)
+        self.recipientsTable.setHorizontalHeaderLabels(['Status', 'Email Address'])
+        self.recipientsTable.verticalHeader().setVisible(False)
+        self.recipientsTable.setShowGrid(True)
+        self.recipientsTable.setColumnWidth(0, 55)
+        self.recipientsTable.horizontalHeader().setStretchLastSection(True)
 
         self.layout.addWidget(self.buttonBar)
-        # self.layout.addWidget(self.recipientsTable)
+        self.layout.addWidget(self.recipientsTable)
         
         self.widget.setLayout(self.layout)
         self.addWidget(self.widget)
@@ -76,7 +76,7 @@ class ControlPanel(QToolBar):
 
     def loadEmails(self, filePath):
         clean_email_list(filePath, filePath)
-        # self.recipientsTable.setRowCount(0)
+        self.recipientsTable.setRowCount(0)
         self.emails_df = pd.DataFrame(columns=['Status', 'Email Address'])
 
 
@@ -84,11 +84,11 @@ class ControlPanel(QToolBar):
         temp_df['Status'] = 'Pending'
         self.emails_df = pd.concat([self.emails_df, temp_df])
 
-        # for index, row in self.emails_df.iterrows():
-        #     row_pos = self.recipientsTable.rowCount()
-        #     self.recipientsTable.insertRow(row_pos)
-        #     self.recipientsTable.setItem(row_pos, 0, QTableWidgetItem(row['Status']))
-        #     self.recipientsTable.setItem(row_pos, 1, QTableWidgetItem(row['Email Address']))
+        for index, row in self.emails_df.iterrows():
+            row_pos = self.recipientsTable.rowCount()
+            self.recipientsTable.insertRow(row_pos)
+            self.recipientsTable.setItem(row_pos, 0, QTableWidgetItem(row['Status']))
+            self.recipientsTable.setItem(row_pos, 1, QTableWidgetItem(row['Email Address']))
         
 
     def startSendingEmails(self):
@@ -116,6 +116,7 @@ class ControlPanel(QToolBar):
         recipient_count = len(self.emails_df)
 
         for index, (idx, row) in enumerate(self.emails_df.iterrows()):
+
             if not state_manager.can_send_email():
                 QMessageBox.critical(self, "Error", "Daily email limits met")
                 return
@@ -139,18 +140,15 @@ class ControlPanel(QToolBar):
             except Exception as e:
                 print(e)
                 new_status = "Failed"
+            
+            time.sleep(150)
 
             self.emails_df.at[idx, 'Status'] = new_status
-            # self.recipientsTable.setItem(index, 0, QTableWidgetItem(new_status))
+            self.recipientsTable.setItem(index, 0, QTableWidgetItem(new_status))
 
             progress_percentage = int((index + 1) / recipient_count * 100)
             self.progressBar.setValue(progress_percentage)
             QApplication.processEvents()
-            
-            if index % 15 == 0 and index > 0:
-                time.sleep(20)
-            else:
-                time.sleep(5)
 
         self.progressBar.hide()
         self.sending_emails = False

@@ -1,63 +1,57 @@
 from PyQt5.QtCore import Qt
-
-from PyQt5.QtWidgets import QToolBar
-from PyQt5.QtWidgets import QAction
-from PyQt5.QtWidgets import QComboBox
-from PyQt5.QtWidgets import QSpinBox
-from PyQt5.QtWidgets import QTextEdit
-from PyQt5.QtWidgets import QColorDialog
-from PyQt5.QtWidgets import QInputDialog
-from PyQt5.QtWidgets import QToolButton
-from PyQt5.QtWidgets import QWidgetAction
-
-from PyQt5.QtGui import QIcon, QFont, QTextListFormat, QTextCursor
-from PyQt5.QtGui import QFont
-from PyQt5.QtGui import QTextListFormat
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtWidgets import QToolBar, QAction, QFontComboBox, QSpinBox, QTextEdit, QColorDialog, QInputDialog, QToolButton, QWidgetAction
+from PyQt5.QtGui import QIcon, QFont, QTextListFormat, QTextCursor, QTextCharFormat
 
 from ..utilities.resource_path import resource_path
-
+from ..utilities.config import config
 
 
 class Toolbar(QToolBar):
     def __init__(self, parent, editor):
         super().__init__(parent)
         self.editor: QTextEdit = editor
+        default_font_family = config.get("PREFERENCES", "default_font_family")
+        default_font_size = int(config.get("PREFERENCES", "default_font_size"))
+
+        # Set the default font and size
+        self.editor.setFont(QFont(default_font_family, default_font_size))
         self.setWindowTitle('Toolbar')
         self.initUI()
 
-
     def initUI(self):
         # Font Selector
-        self.fontBox = QComboBox(self)
-        self.fontBox.addItems(["Courier New", "Helvetica", "Arial", "SansSerif", "Times", "Monospace"])
-        self.fontBox.activated.connect(lambda: self.setFont(self.fontBox.currentText()))
+        self.fontBox = QFontComboBox(self)
+        default_font_family = config.get("PREFERENCES", "default_font_family")
+        self.fontBox.setCurrentFont(QFont(default_font_family))
+        self.fontBox.activated.connect(lambda: self.setFont(self.fontBox.currentFont().family()))
 
         # Font Size Selector
         self.fontSizeBox = QSpinBox(self)
         self.fontSizeBox.setMinimum(1)
         self.fontSizeBox.setMaximum(100)
-        self.fontSizeBox.setValue(12)
+        default_font_size = int(config.get("PREFERENCES", "default_font_size"))
+        self.fontSizeBox.setValue(default_font_size)
         self.fontSizeBox.valueChanged.connect(lambda: self.setFontSize(self.fontSizeBox.value()))
 
         # Adding Widgets to Toolbar
         self.addWidget(self.fontBox)
         self.addWidget(self.fontSizeBox)
 
-        # Create a color picker tool button
+        # Color Picker for Text Color
         self.colorPickerButton = QToolButton(self)
         self.colorPickerButton.setAutoFillBackground(True)
         self.updateButtonColor(self.editor.textColor())
         self.colorPickerButton.setFixedSize(24, 24)
         self.colorPickerButton.clicked.connect(self.setTextColor)
 
-        # Background Color Picker Button
+        # Color Picker for Background Color
         self.bgColorPickerButton = QToolButton(self)
         self.bgColorPickerButton.setAutoFillBackground(True)
         self.updateButtonColor(self.editor.textBackgroundColor())
         self.bgColorPickerButton.setFixedSize(24, 24)
         self.bgColorPickerButton.clicked.connect(self.setTextBackgroundColor)
 
+        # Actions for color pickers
         colorPickerAction = QWidgetAction(self)
         colorPickerAction.setDefaultWidget(self.colorPickerButton)
         self.addAction(colorPickerAction)
@@ -66,7 +60,7 @@ class Toolbar(QToolBar):
         backgroundColorPickerAction.setDefaultWidget(self.bgColorPickerButton)
         self.addAction(backgroundColorPickerAction)
 
-        # Heading Styles Actions
+        # Heading Styles
         self.addSeparator()
         self.addHeadingAction("H1", 24)
         self.addHeadingAction("H2", 18)
@@ -90,48 +84,64 @@ class Toolbar(QToolBar):
         self.addTextAction("Unordered List", resource_path("img/icons/ul.png"), lambda: self.setList(QTextListFormat.ListDisc))
         self.addTextAction("Insert Hyperlink", resource_path("img/icons/hyperlink.png"), self.insertHyperlink)
 
-
     def addTextAction(self, title, iconPath, function):
         action = QAction(QIcon(iconPath), title, self)
         action.triggered.connect(function)
         self.addAction(action)
-
 
     def addAlignmentAction(self, title, iconPath, alignment):
         action = QAction(QIcon(iconPath), title, self)
         action.triggered.connect(lambda: self.editor.setAlignment(alignment))
         self.addAction(action)
 
+    def setFont(self, fontName):
+        cursor = self.editor.textCursor()
+        if cursor.hasSelection():
+            currentFormat = cursor.charFormat()
+            currentFormat.setFontFamily(fontName)
+            cursor.setCharFormat(currentFormat)
+        else:
+            newFormat = QTextCharFormat()
+            newFormat.setFontFamily(fontName)
+            self.editor.mergeCurrentCharFormat(newFormat)
+        self.editor.setFocus()
+
 
     def setFontSize(self, size):
-        self.editor.setFontPointSize(size)
-
-
-    def setFont(self, fontName):
-        self.editor.setCurrentFont(QFont(fontName))
-
+        cursor = self.editor.textCursor()
+        if cursor.hasSelection():
+            currentFormat = cursor.charFormat()
+            currentFormat.setFontPointSize(size)
+            cursor.setCharFormat(currentFormat)
+        else:
+            newFormat = QTextCharFormat()
+            newFormat.setFontPointSize(size)
+            self.editor.mergeCurrentCharFormat(newFormat)
+        self.editor.setFocus()
 
     def toggleBoldText(self):
-        currentState = self.editor.fontWeight() == QFont.Bold
-        self.editor.setFontWeight(QFont.Bold if not currentState else QFont.Normal)
-
+        cursor = self.editor.textCursor()
+        currentFormat = cursor.charFormat()
+        currentFormat.setFontWeight(QFont.Bold if currentFormat.fontWeight() != QFont.Bold else QFont.Normal)
+        cursor.setCharFormat(currentFormat)
 
     def toggleItalicText(self):
-        currentState = self.editor.fontItalic()
-        self.editor.setFontItalic(not currentState)
-
+        cursor = self.editor.textCursor()
+        currentFormat = cursor.charFormat()
+        currentFormat.setFontItalic(not currentFormat.fontItalic())
+        cursor.setCharFormat(currentFormat)
 
     def toggleUnderlineText(self):
-        currentState = self.editor.fontUnderline()
-        self.editor.setFontUnderline(not currentState)
-
+        cursor = self.editor.textCursor()
+        currentFormat = cursor.charFormat()
+        currentFormat.setFontUnderline(not currentFormat.fontUnderline())
+        cursor.setCharFormat(currentFormat)
 
     def setTextBackgroundColor(self):
         color = QColorDialog.getColor()
         if color.isValid():
             self.editor.setTextBackgroundColor(color)
             self.bgColorPickerButton.setStyleSheet(f"background-color: {color.name()};")
-
 
     def setTextColor(self):
         color = QColorDialog.getColor(self.editor.textColor())
@@ -156,19 +166,16 @@ class Toolbar(QToolBar):
         dialog.setInputMode(QInputDialog.TextInput)
         dialog.setLabelText("Enter URL:")
         dialog.setWindowTitle("Insert Hyperlink")
-        
         dialog.setStyleSheet("""
             QInputDialog {
-                background-color: #f0f0f0; /* Light gray background */
+                background-color: #f0f0f0;
             }
             QLabel, QLineEdit {
-                color: #333; /* Darker text for better contrast */
+                color: #333;
             }
         """)
-        
         ok = dialog.exec_()
         url = dialog.textValue()
-
         if ok and url:
             text = self.editor.textCursor().selectedText()
             if not text:
@@ -184,20 +191,16 @@ class Toolbar(QToolBar):
 
     def toggleHeadingStyle(self, size, weight):
         cursor = self.editor.textCursor()
-        # If no text is selected, work with the current line/block
         if not cursor.hasSelection():
             cursor.select(QTextCursor.LineUnderCursor)
-
         currentFormat = cursor.charFormat()
         currentFont = currentFormat.font()
-
         if currentFont.pointSize() == size and currentFont.weight() == weight:
             currentFont.setPointSize(12)
             currentFont.setWeight(QFont.Normal)
         else:
             currentFont.setPointSize(size)
             currentFont.setWeight(weight)
-
         currentFormat.setFont(currentFont)
         cursor.mergeCharFormat(currentFormat)
         self.editor.mergeCurrentCharFormat(currentFormat)

@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QTextEdit
 
 import json
 
+from ..containers.preferences import PreferencesDialog
+
 from ..utilities.config import config
 
 
@@ -46,7 +48,7 @@ class Menubar:
         file_menu.addSeparator() # -----------------------
 
         preferences_action = QAction("Preferences", self.parent)
-        preferences_action.triggered.connect(print)
+        preferences_action.triggered.connect(self.open_preferences)
         file_menu.addAction(preferences_action)
 
         # Edit menu
@@ -153,10 +155,14 @@ class Menubar:
             with open(filePath, 'r') as file:
                 data = json.load(file)
                 subject = data.get('subject', '')
-                body_text = data.get('body', {}).get('text', '')
+                # body_text = data.get('body', {}).get('text', '')
                 body_html = data.get('body', {}).get('html', '')
                 
                 # Updating the UI components
                 self.parent.subjectLineEdit.setText(subject)
                 self.editor.setHtml(body_html)
         self.update_title()
+
+    def open_preferences(self):
+        dialog = PreferencesDialog(self.parent)
+        dialog.exec_()

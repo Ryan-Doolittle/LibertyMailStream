@@ -5,9 +5,10 @@ from .resource_path import resource_path
 
 
 class Config:
+    path = resource_path("settings/config.cfg")
     def __init__(self) -> None:
         self.config = configparser.ConfigParser()
-        self.config.read(resource_path('settings/config.cfg'))
+        self.config.read(self.path)
 
 
     def get(self, section, option):
@@ -32,7 +33,7 @@ class Config:
     
 
     def save(self):
-        with open('config.cfg', "w") as config_file:
+        with open(self.path, "w") as config_file:
             self.config.write(config_file)
 
 
