@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /build/main
 /dist
 *.spec
+/email_list.csv
