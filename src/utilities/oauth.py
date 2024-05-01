@@ -12,6 +12,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from email.mime.text import MIMEText
 
+from ..utilities.resource_path import resource_path
+
 
 
 
@@ -53,11 +55,19 @@ class GmailService:
                     query_components = parse_qs(query)
                     if 'code' in query_components:
                         service.auth_code = query_components['code'][0]
-                        service.auth_code_event.set()  # Signal that the code is obtained.
+                        service.auth_code_event.set()
+
                         self.send_response(200)
                         self.send_header('Content-type', 'text/html')
                         self.end_headers()
-                        self.wfile.write(b'Authentication successful. You may close this window.')
+                        try:
+                            with open(resource_path('web/login_success.html'), 'r', encoding='utf-8') as file:
+                                html_content = file.read()
+                                self.wfile.write(html_content.encode('utf-8'))
+                        except FileNotFoundError:
+                            self.wfile.write(b"Error: HTML file not found.")
+                        except Exception as e:
+                            self.wfile.write(b"Error loading HTML content.")
                     else:
                         self.send_error(401)
             return CustomAuthHandler
