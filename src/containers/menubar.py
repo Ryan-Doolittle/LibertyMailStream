@@ -12,6 +12,21 @@ from ..utilities.config import config
 
 
 class Menubar:
+    """
+    Handles the menubar for the main application window, providing file management, editing options, and preferences.
+
+    This class sets up the menu bar in the PyQt5 application, allowing users to manage documents, edit content,
+    and adjust application settings like theme and toolbars.
+
+    Attributes:
+        parent (QMainWindow): The parent window to which this menu bar belongs.
+        editor (QTextEdit): A reference to the text editor widget used for displaying and editing the email content.
+        document_name (str): The name of the currently loaded or new document, defaulting to "Untitled".
+
+    Args:
+        parent (QMainWindow): The main application window that hosts the menubar.
+        editor (QTextEdit): The text editing widget where email content is managed.
+    """
     def __init__(self, parent, editor):
         self.parent = parent
         self.editor: QTextEdit = editor
@@ -20,6 +35,10 @@ class Menubar:
 
 
     def initUI(self):
+        """
+        Initializes the user interface components of the menu bar. It sets up the file, edit, view,
+        and preferences menus with all corresponding actions and their functionalities.
+        """
         menubar = self.parent.menuBar()
         
         # File menu
@@ -103,16 +122,26 @@ class Menubar:
 
 
     def update_title(self):
+        """
+        Updates the title of the main window to reflect the current document name.
+        """
         self.parent.setWindowTitle(f"{self.parent.title} - {self.document_name}")
 
 
     def newDocument(self):
+        """
+        Clears the current document content and resets the document name to 'Untitled'. Also updates the window title.
+        """
         self.parent.editor.clear()
         self.document_name = "Untitled"
         self.update_title()
 
 
     def saveFile(self):
+        """
+        Saves the current document to a file using JSON format, storing details like subject and body.
+        The file is saved under the current document name in a predefined templates directory.
+        """
         data = {
             "subject": self.parent.subjectLineEdit.text(),
             "body": {
@@ -126,6 +155,10 @@ class Menubar:
 
 
     def saveAsFile(self):
+        """
+        Opens a file dialog allowing the user to specify the filename and location for saving the current document.
+        The content is saved in JSON format, and the document name is updated accordingly.
+        """
         options = QFileDialog.Options()
         filePath, _ = QFileDialog.getSaveFileName(self.parent, "Save File", "", "JSON Files (*.json);;All Files (*)", options=options)
 
@@ -147,6 +180,10 @@ class Menubar:
 
 
     def openFile(self):
+        """
+        Opens a file dialog to choose a document to load. The selected file's content is loaded into the editor,
+        and the document name is updated based on the file name.
+        """
         options = QFileDialog.Options()
         filePath, _ = QFileDialog.getOpenFileName(self.parent, "Open File", "", "JSON Files (*.json);;All Files (*)", options=options)
         file_name_with_extension = filePath.split("/")[-1]
@@ -164,5 +201,8 @@ class Menubar:
         self.update_title()
 
     def open_preferences(self):
+        """
+        Opens a preferences dialog allowing the user to adjust application settings such as theme and toolbar visibility.
+        """
         dialog = PreferencesDialog(self.parent)
         dialog.exec_()

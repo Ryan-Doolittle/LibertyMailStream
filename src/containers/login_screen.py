@@ -11,6 +11,19 @@ from ..utilities.oauth import GmailService
 
 
 class EmailerLoginDialog(QDialog):
+    """
+    A dialog window for the OAuth2 authentication with Google for email services.
+    
+    This class provides a GUI for users to authenticate themselves using Google's OAuth2 service,
+    ensuring secure access to their email functionalities.
+    
+    Attributes:
+        email (str): Email address of the user. Initialized to None and updated upon successful login.
+        oauth2_handler (GmailService): Handler for OAuth2 authentication process.
+    
+    Args:
+        oauth2_handler (GmailService): An instance of GmailService to handle OAuth2 authentication.
+    """
     def __init__(self, oauth2_handler) -> None:
         super().__init__()
         self.email: str = None
@@ -20,6 +33,9 @@ class EmailerLoginDialog(QDialog):
 
 
     def initUI(self) -> None:
+        """
+        Initializes the user interface components of the login dialog. It sets up the layout, logo, and login button.
+        """
         self.setWindowTitle("LMS")
         self.setWindowIcon(QIcon(resource_path('img/icons/logo.png')))
         
@@ -39,6 +55,10 @@ class EmailerLoginDialog(QDialog):
 
 
     def initiate_oauth2_flow(self):
+        """
+        Initiates the OAuth2 flow for authentication. It retrieves the client ID and secret from configuration,
+        calls the GmailService to authenticate, and handles the user response based on the authentication success.
+        """
         client_id = config.get("TEMP_SECRET_STORAGE", "google_client_id")
         print(client_id)
         success = self.oauth2_handler.authenticate(

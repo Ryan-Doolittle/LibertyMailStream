@@ -3,12 +3,25 @@ from PyQt5.QtGui import QFont
 from ..utilities.config import config  # Ensure this import is correct
 
 class PreferencesDialog(QDialog):
+    """
+    A dialog for setting preferences in the application, such as email delay, default font family, and font size.
+    
+    This class provides a user interface for adjusting settings that affect the behavior of the application.
+    Users can set how long the application should delay between sending emails, as well as the default appearance of text within the application.
+    
+    Args:
+        parent (QWidget): The parent widget of this dialog, typically the main window of the application.
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Preferences')
         self.initUI()
 
     def initUI(self):
+        """
+        Initializes the user interface elements for the preferences dialog. This includes input fields for
+        setting email delay, default font family, and default font size, along with Save and Cancel buttons.
+        """
         layout = QVBoxLayout()
 
         # Email Delay Setting
@@ -59,6 +72,10 @@ class PreferencesDialog(QDialog):
         self.setLayout(layout)
 
     def save_preferences(self):
+        """
+        Saves the preferences set by the user to the configuration. This includes the email delay, default font family,
+        and default font size. The dialog is accepted and closed upon successful saving.
+        """
         config.set("PREFERENCES", "email_delay", str(self.email_delay_input.value()))
         config.set("PREFERENCES", "default_font_family", self.font_family_input.currentFont().family())
         config.set("PREFERENCES", "default_font_size", str(self.font_size_input.value()))

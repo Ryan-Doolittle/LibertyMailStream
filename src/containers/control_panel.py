@@ -9,6 +9,18 @@ from ..utilities.config import config
 
 
 class EmailSenderThread(QThread):
+    """
+    A class derived from QThread that handles the background sending of emails.
+    
+    Attributes:
+        update_progress (pyqtSignal): Signal emitted during the sending process to update the progress.
+        finished (pyqtSignal): Signal emitted when the email sending process is complete.
+        error_occurred (pyqtSignal): Signal emitted in case of an error during the email sending process.
+    
+    Args:
+        emails_df (pd.DataFrame): DataFrame containing the email addresses and their sending status.
+        parent_frame (QWidget): The parent GUI component that contains UI elements like subject line and content editor.
+    """
     update_progress = pyqtSignal(int, str)
     finished = pyqtSignal()
     error_occurred = pyqtSignal(str)
@@ -20,6 +32,10 @@ class EmailSenderThread(QThread):
         self.keep_running = True
 
     def run(self):
+        """
+        Starts the process of sending emails. This method checks for unsent emails in the DataFrame and sends them.
+        It also updates the status of each email sent and handles the interruption if the user decides to stop the process.
+        """
         print("Starting email sending process.")
         recipient_count = len(self.emails_df)
         for index, (idx, row) in enumerate(self.emails_df.iterrows()):
@@ -64,11 +80,20 @@ class EmailSenderThread(QThread):
         self.finished.emit()
 
     def stop(self):
+        """
+        Stops the email sending process by setting the keep_running flag to False.
+        """
         self.keep_running = False
         print("Stopping email sending process...")
 
 
 class ControlPanel(QToolBar):
+    """
+    A class representing the control panel in the GUI, which includes buttons and a table to manage email sending tasks.
+    
+    Args:
+        parent (QWidget): The parent widget that this ControlPanel belongs to.
+    """
     def __init__(self, parent):
         super().__init__(parent)
         self.parent_frame = parent
@@ -82,6 +107,9 @@ class ControlPanel(QToolBar):
             QMessageBox.critical(self, "Error", message)
 
     def initUI(self):
+        """
+        Initializes the user interface components of the control panel, including buttons and the email recipient table.
+        """
         self.widget = QWidget()
         self.layout = QVBoxLayout()
         
@@ -125,6 +153,12 @@ class ControlPanel(QToolBar):
 
 
     def loadEmails(self, filePath):
+        """
+        Loads emails from a specified CSV file, cleans them using an external utility, and updates the GUI table.
+        
+        Args:
+            filePath (str): The path to the CSV file containing email addresses.
+        """
         clean_email_list(filePath, filePath)
         self.recipientsTable.setRowCount(0)
         self.emails_df = pd.DataFrame(columns=['Status', 'Email Address'])
@@ -142,6 +176,10 @@ class ControlPanel(QToolBar):
         
 
     def startSendingEmails(self):
+        """
+        Initializes and starts the EmailSenderThread to send emails. It also connects signals to appropriate slots
+        for error handling and progress updates.
+        """
         if not self.parent_frame.gmail_service:
             QMessageBox.critical(self, "Error", "Emailer service is not initialized.")
             return
@@ -153,6 +191,13 @@ class ControlPanel(QToolBar):
         self.email_sender_thread.start()
 
     def updateEmailStatus(self, index, status):
+        """
+        Updates the status of an email in the GUI table and the progress bar.
+        
+        Args:
+            index (int): The index of the email in the table.
+            status (str): The new status of the email ('Sent' or 'Failed').
+        """
         self.recipientsTable.setItem(index, 0, QTableWidgetItem(status))
         progress_percentage = int((index + 1) / len(self.emails_df) * 100)
         self.progressBar.setValue(progress_percentage)
